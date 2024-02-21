@@ -2,12 +2,12 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h> // LiquidCrystal_I2C library
  
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); // 0x27 is the i2c address of the LCM1602 IIC v1 module (might differ)
+LiquidCrystal_I2C lcd(0x27, 16, 2); // 0x27 is the i2c address of the LCM1602 IIC v1 module (might differ)
 
 void setup() {
-  lcd.begin(16, 2); // begins connection to the LCD module
+  lcd.init();
   lcd.backlight(); // turns on the backlight
-  lcd.clear(); 
+  //lcd.clear(); 
 
   Serial.begin(9600);
   while (!Serial) {
