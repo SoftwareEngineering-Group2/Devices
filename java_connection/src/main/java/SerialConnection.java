@@ -3,6 +3,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import java.io.IOException;
 
 public class SerialConnection {
+    public Integer data;
     public void serialConnect() throws IOException, InterruptedException {
         // Get an array of available serial ports
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -29,12 +30,14 @@ public class SerialConnection {
         }
 
         Thread.sleep(3000);
-        for (Integer i = 0; i < 5; ++i) {
+        sp.getOutputStream().write(data.byteValue());
+        sp.getOutputStream().flush();
+        /*for (Integer i = 0; i < 5; ++i) {
             sp.getOutputStream().write(i.byteValue());
             sp.getOutputStream().flush();
             System.out.println("Sent number: " + i);
             Thread.sleep(1000);
-        }
+        }*/
 
         if (sp.closePort()) {
             System.out.println("Port is closed :)");

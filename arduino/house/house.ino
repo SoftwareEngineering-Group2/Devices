@@ -17,6 +17,7 @@ void setup() {
   lcd.setCursor(0, 0); // set cursor to first row
   lcd.print("Init done"); // print to lcd
  
+ pinMode(13, OUTPUT);
 }
 
 void loop() {
@@ -28,6 +29,12 @@ void loop() {
       lcd.print("I received: "); // print out to LCD
       lcd.setCursor(0, 1); // set cursor to secon row
       lcd.print(incomingByte); // print out the retrieved value to the second row
+      thing_on(incomingByte);
     }
   }
+}
+
+void thing_on(byte pin) {
+
+  digitalWrite(pin, HIGH);
 }
