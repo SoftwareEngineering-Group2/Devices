@@ -13,8 +13,11 @@ public class Main {
             Thread.sleep(2000);
         }*/
 
-        serial.data = 255;
-        serial.serialConnect();
+        //serial.data = 255;
+        //serial.serialConnect();
+
+        SocketsIO socketsIO = new SocketsIO();
+        socketsIO.connect();
 
         // Http connection
         /*HttpConnection http = new HttpConnection();
