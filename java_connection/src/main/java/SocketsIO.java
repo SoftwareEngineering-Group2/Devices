@@ -10,7 +10,6 @@ public class SocketsIO {
 
     public SocketsIO() {
         try {
-
             socket = IO.socket("https://server-o8if.onrender.com");
             initializeEventListeners();
         } catch ( URISyntaxException e) {
