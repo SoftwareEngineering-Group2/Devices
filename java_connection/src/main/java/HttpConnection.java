@@ -14,8 +14,9 @@ public class HttpConnection {
         try {
             // URL of server
             //URL url = new URL("https://httpbin.org/post");
-            URL url = new URL("https://ptsv3.com/t/hej/d/3/");
+            //URL url = new URL("https://ptsv3.com/t/testinghouse/d/4/");
             //URL url = new URL("https://webhook.site/30e1a518-c9cf-425b-9bd8-07c4b598c1bd");
+            URL url = new URL("https://server-o8if.onrender.com/device/whiteLed/state");
             // Open connection
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
