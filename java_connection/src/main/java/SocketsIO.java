@@ -31,7 +31,15 @@ public class SocketsIO {
     }
 
     private void handleDeviceStateChanged(JSONObject data) {
-        System.out.println(data.toString());
+        // this is an example of how the components can react to changes through websocket
+        // later we can change the print statements for method calls.
+        if ("whiteLed".equals(data.optString("type"))) {
+            if ("off".equals(data.optString("state"))) {
+                System.out.println("whiteLed off");
+            } else if ("on".equals(data.optString("state"))){
+                System.out.println("whiteLed on");
+            }
+        }
     }
 
     public void connect() {
