@@ -70,7 +70,7 @@ public class SocketsIO {
                 serial.data = serial.convertToByte(statusArray);
                 String binaryString = String.format("%8s", Integer.toBinaryString(serial.data & 0xFF)).replace(' ', '0');
                 System.out.println(binaryString);
-                //serial.serialWrite(sp);
+                serial.serialWrite(sp);
 
             } catch (JSONException e) {
                 e.printStackTrace();
