@@ -36,10 +36,6 @@ void setup() {
 
   pinMode(BUZZER, OUTPUT);
   pinMode(YELLOW_LED, OUTPUT);
-  //pinMode(WHITE_LED, OUTPUT);
-  //pinMode(WHITE_LED, OUTPUT);
-  //pinMode(DOOR, OUTPUT);
-  //pinMode(WINDOW, OUTPUT);
   pinMode(WHITE_LED, OUTPUT);
 }
 

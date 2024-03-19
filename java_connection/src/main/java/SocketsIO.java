@@ -1,3 +1,4 @@
+import com.fazecast.jSerialComm.SerialPort;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import org.json.JSONArray;
@@ -16,15 +17,26 @@ public class SocketsIO {
 
 
     public SocketsIO() {
+        // An instance of the port used for serial connection
+        // and an instance of the connection itself
+        SerialPort sp = SerialPort.getCommPort("COM5"); // device name
+        SerialConnection serial = new SerialConnection();
+        try {
+            serial.serialConnect(sp);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         try {
             socket = IO.socket("https://server-o8if.onrender.com");
-            initializeEventListeners();
+            initializeEventListeners(serial, sp);
         } catch ( URISyntaxException e) {
             throw new RuntimeException("Invalid Socket.IO server URI", e);
         }
     }
 
-    private void initializeEventListeners() {
+    private void initializeEventListeners(SerialConnection serial, SerialPort sp) {
         socket.on(Socket.EVENT_CONNECT, args -> System.out.println("Connected to the server."));
 
         //this will receive all devices status on startup
@@ -53,19 +65,13 @@ public class SocketsIO {
                 //temporary code to avoid null-values
                 statusArray[0] = 0;
                 statusArray[4] = 0;
-                SerialConnection serial = new SerialConnection();
                 System.out.println(serial.convertToByte(statusArray));
                 System.out.println(Arrays.toString(statusArray));
                 serial.data = serial.convertToByte(statusArray);
                 String binaryString = String.format("%8s", Integer.toBinaryString(serial.data & 0xFF)).replace(' ', '0');
                 System.out.println(binaryString);
-                try {
-                    serial.serialConnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                //serial.serialWrite(sp);
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
