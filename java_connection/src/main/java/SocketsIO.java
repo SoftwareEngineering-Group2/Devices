@@ -5,10 +5,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 public class SocketsIO {
 
     private Socket socket;
+    private String[] deviceList = {"whiteLed", "yellowLed", "door", "window", "buzzer", "fan"};
+    private Integer[] statusArray = new Integer[8];
+
 
     public SocketsIO() {
         try {
@@ -27,10 +31,28 @@ public class SocketsIO {
             System.out.println(args[0]);
 
             try {
+                int status = 0;
                 JSONArray jsonArray = (JSONArray) args[0];
                 for (int i = 0; i < jsonArray.length(); i++){
-                    System.out.println(jsonArray.get(i).toString());
+                    status = getStatus(jsonArray.getJSONObject(i));
+                    if(jsonArray.getJSONObject(i).optString("deviceName").equals("buzzer")){
+                        statusArray[0] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("yellowLed")){
+                        statusArray[1] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("fan")){
+                        statusArray[2] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("door")){
+                        statusArray[4] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("window")){
+                        statusArray[5] = status;
+                    }else if(jsonArray.getJSONObject(i).optString("deviceName").equals("whiteLed")){
+                        statusArray[6] = status;
+                    }
                 }
+                //temporary code to avoid null-values
+                statusArray[3] = 0;
+                statusArray[7] = 0;
+                System.out.println(Arrays.toString(statusArray));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -66,6 +88,18 @@ public class SocketsIO {
 
     public void disconnect() {
         socket.disconnect();
+    }
+
+
+    public int getStatus(JSONObject data){
+        if(data.optString("deviceState") == "true"){
+            return 1;
+        }
+        return 0;
+    }
+
+    public Integer[] getStatusArray(){
+        return statusArray;
     }
 
 
