@@ -54,8 +54,8 @@ void loop() {
       lcd.print("I received: "); // print out to LCD
       lcd.setCursor(0, 1); // set cursor to secon row
       for (i=0; i < 8; ++i) {
-        //lcd.print(variable[i]); // print out the retrieved value to the second row
-        //lcd.setCursor(i + 1, 0);
+        lcd.print(variable[i]); // print out the retrieved value to the second row
+        lcd.setCursor(i + 1, 0);
       }
       ByteToArray(incomingByte, variable);
     }
