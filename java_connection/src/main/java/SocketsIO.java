@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 
@@ -36,23 +37,35 @@ public class SocketsIO {
                 for (int i = 0; i < jsonArray.length(); i++){
                     status = getStatus(jsonArray.getJSONObject(i));
                     if(jsonArray.getJSONObject(i).optString("deviceName").equals("buzzer")){
-                        statusArray[0] = status;
+                        statusArray[7] = status;
                     } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("yellowLed")){
-                        statusArray[1] = status;
-                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("fan")){
-                        statusArray[2] = status;
-                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("door")){
-                        statusArray[4] = status;
-                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("window")){
-                        statusArray[5] = status;
-                    }else if(jsonArray.getJSONObject(i).optString("deviceName").equals("whiteLed")){
                         statusArray[6] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("fan")){
+                        statusArray[5] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("door")){
+                        statusArray[3] = status;
+                    } else if(jsonArray.getJSONObject(i).optString("deviceName").equals("window")){
+                        statusArray[2] = status;
+                    }else if(jsonArray.getJSONObject(i).optString("deviceName").equals("whiteLed")){
+                        statusArray[1] = status;
                     }
                 }
                 //temporary code to avoid null-values
-                statusArray[3] = 0;
-                statusArray[7] = 0;
+                statusArray[0] = 0;
+                statusArray[4] = 0;
+                SerialConnection serial = new SerialConnection();
+                System.out.println(serial.convertToByte(statusArray));
                 System.out.println(Arrays.toString(statusArray));
+                serial.data = serial.convertToByte(statusArray);
+                String binaryString = String.format("%8s", Integer.toBinaryString(serial.data & 0xFF)).replace(' ', '0');
+                System.out.println(binaryString);
+                try {
+                    serial.serialConnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -93,6 +106,7 @@ public class SocketsIO {
 
     public int getStatus(JSONObject data){
         if(data.optString("deviceState") == "true"){
+            System.out.println(data.optString("deviceName"));
             return 1;
         }
         return 0;

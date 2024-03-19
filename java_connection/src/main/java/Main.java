@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         // Serial connection
-        SerialConnection serial = new SerialConnection();
+        //SerialConnection serial = new SerialConnection();
         /*for (int i = 0; i < 5; i++) {
             serial.data = 255;
             serial.serialConnect();
