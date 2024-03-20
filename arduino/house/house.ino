@@ -53,11 +53,13 @@ void loop() {
       lcd.setCursor(0, 0); // set cursor to first row
       lcd.print("I received: "); // print out to LCD
       lcd.setCursor(0, 1); // set cursor to secon row
+      ByteToArray(incomingByte, variable);
+      
       for (i=0; i < 8; ++i) {
         lcd.print(variable[i]); // print out the retrieved value to the second row
-        lcd.setCursor(i + 1, 0);
+        lcd.setCursor(i + 1, 1);
       }
-      ByteToArray(incomingByte, variable);
+      
     }
   }
 }
