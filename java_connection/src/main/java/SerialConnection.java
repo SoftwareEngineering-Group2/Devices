@@ -3,7 +3,7 @@ import com.fazecast.jSerialComm.SerialPort;
 import java.io.IOException;
 
 public class SerialConnection {
-    public byte data;
+    //public byte data;
     private SerialPort sp;
     public void serialConnect() throws IOException, InterruptedException {
         // Get an array of available serial ports
@@ -52,18 +52,13 @@ public class SerialConnection {
          */
     }
 
-    public void serialWriteData() throws IOException {
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    public void serialWriteData(byte data) throws IOException {
 
         sp.getOutputStream().write(data);
         sp.getOutputStream().flush();
 
     }
+
     public void serialClose() {
 
         if (sp.closePort()) {

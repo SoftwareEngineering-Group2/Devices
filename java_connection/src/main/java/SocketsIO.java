@@ -42,6 +42,12 @@ public class SocketsIO {
         socket.on("all-devices", args -> {
             System.out.println(args[0]);
 
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             updateHouse(args[0]);
 
         });
@@ -90,10 +96,12 @@ public class SocketsIO {
             //SerialConnection serial = new SerialConnection();
             System.out.println(serial.convertToByte(statusArray));
             System.out.println(Arrays.toString(statusArray));
-            serial.data = serial.convertToByte(statusArray);
-            String binaryString = String.format("%8s", Integer.toBinaryString(serial.data & 0xFF)).replace(' ', '0');
+
+            byte dataToWrite = serial.convertToByte(statusArray);
+
+            String binaryString = String.format("%8s", Integer.toBinaryString(dataToWrite & 0xFF)).replace(' ', '0');
             System.out.println(binaryString);
-            serial.serialWriteData();
+            serial.serialWriteData(dataToWrite);
 
 
         } catch (JSONException e) {
