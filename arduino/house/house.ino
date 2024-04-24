@@ -118,9 +118,11 @@ byte convertToByte(int data[8]) {
 
 void bit_parser(int arr[8]) {
   if(arr[0] == 1) {
-    digitalWrite(BUZZER, HIGH);
+    //digitalWrite(BUZZER, HIGH);
+    tone(BUZZER, 1000);
   } else {
-    digitalWrite(BUZZER, LOW);
+    //digitalWrite(BUZZER, LOW);
+    noTone(BUZZER);
   }
   if(arr[1] == 1) {
     digitalWrite(YELLOW_LED, HIGH);
