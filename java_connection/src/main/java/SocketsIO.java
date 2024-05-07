@@ -33,6 +33,8 @@ public class SocketsIO {
         } catch ( URISyntaxException e) {
             throw new RuntimeException("Invalid Socket.IO server URI", e);
         }
+
+
     }
 
     private void initializeEventListeners() {
@@ -127,6 +129,12 @@ public class SocketsIO {
 
     public void connect() {
         socket.connect();
+
+        try {
+            serial.serialReadData();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void disconnect() {

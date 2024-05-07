@@ -5,6 +5,9 @@ import java.io.IOException;
 public class SerialConnection {
     //public byte data;
     private SerialPort sp;
+
+    private HTTPHelper httpHelper = new HTTPHelper();
+
     public void serialConnect() throws IOException, InterruptedException {
         // Get an array of available serial ports
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -21,7 +24,7 @@ public class SerialConnection {
 
         sp = SerialPort.getCommPort("COM3"); // device name TODO: must be changed
         sp.setComPortParameters(9600, 8, 1, 0); // default connection settings for Arduino
-        sp.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 0); // block until bytes can be written
+        sp.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING | SerialPort.TIMEOUT_WRITE_BLOCKING, 1000, 1000);
 
         if (sp.openPort()) {
             System.out.println("Port is open :)");
@@ -30,32 +33,38 @@ public class SerialConnection {
             return;
         }
 
-        /*
-        Thread.sleep(3000);
-        sp.getOutputStream().write(data);
-        sp.getOutputStream().flush();
-        */
-        /*for (Integer i = 0; i < 5; ++i) {
-            sp.getOutputStream().write(i.byteValue());
-            sp.getOutputStream().flush();
-            System.out.println("Sent number: " + i);
-            Thread.sleep(1000);
-        }*/
-
-        /*
-        if (sp.closePort()) {
-            System.out.println("Port is closed :)");
-        } else {
-            System.out.println("Failed to close port :(");
-            return;
-        }
-         */
     }
 
     public void serialWriteData(byte data) throws IOException {
 
         sp.getOutputStream().write(data);
         sp.getOutputStream().flush();
+
+    }
+
+    public void serialReadData() throws IOException {
+
+        httpHelper.HttpConnect();
+
+        try {
+            while (true) {
+                if (sp.getInputStream().available() > 0) {
+                    int receivedByte = sp.getInputStream().read(); // Read the byte from Arduino
+                    System.out.println("Received Byte: " + receivedByte);
+                    System.out.print("Converted: ");
+                    int[] result = byteToArray((byte)receivedByte);
+                    for (int i = 0; i < 8; i++) {
+                        System.out.print(result[i]);
+                    }
+                    System.out.println("");
+
+                    httpHelper.convertArrayToJSONandSend(result);
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -76,6 +85,14 @@ public class SerialConnection {
         }
         return resultByte;
     }
+
+    public int[] byteToArray(byte b) {
+        int[] arr = new int[8];
+        for (int i = 0; i < 8; i++) {
+            arr[i] = b & 1;
+            b = (byte) (b >> 1);
+        }
+        return arr;
+    }
+
 }
-
-

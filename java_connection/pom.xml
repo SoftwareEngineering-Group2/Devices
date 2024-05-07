@@ -29,6 +29,41 @@
             <artifactId>socket.io-client</artifactId>
             <version>2.1.0</version>
         </dependency>
-    </dependencies>
 
-</project>
+
+
+
+                <!-- JUnit Jupiter API for writing tests -->
+                <dependency>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-api</artifactId>
+                    <version>5.8.2</version> <!-- Use the latest version available -->
+                    <scope>test</scope>
+                </dependency>
+
+                <!-- JUnit Jupiter Engine for running tests -->
+                <dependency>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-engine</artifactId>
+                    <version>5.8.2</version> <!-- Use the latest version available -->
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <!-- Ensure your Maven Surefire plugin is updated to support JUnit 5 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.22.2</version> <!-- This or any later version supports JUnit 5 -->
+                        <configuration>
+                            <includes>
+                                <include>/*Tests.java</include>
+                                <include>/*Test.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </project>
