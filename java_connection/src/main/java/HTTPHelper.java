@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,48 +18,25 @@ public class HTTPHelper {
         try {
 
             String[] sensorList = {"gasSensor", "lightSensor", "steamSensor", "moistureSensor", "motionSensor", "leftButton", "rightButton"};
+            //String[] sensorList = {"rightButton", "leftButton", "motionSensor", "moistureSensor", "steamSensor", "lightSensor", "gasSensor" };
 
             String pwdkey = System.getenv("PWDKEY");
             System.out.println(pwdkey);
 
             for (int i = 0; i < NUM_CONNECTIONS; i++) {
 
-                String baseURL = "https://server-o8if.onrender.com/device/" + sensorList[i] + pwdkey;
+                String baseURL = "https://server-o8if.onrender.com/device/" + sensorList[i] + "/" + pwdkey;
                 URL url = new URL(baseURL);
-                // Open connection
-                //connection = (HttpURLConnection) url.openConnection();
 
+                // Open connection
                 connectionList[i] = (HttpURLConnection) url.openConnection();
 
+                connectionList[i].setRequestMethod("POST");
+                connectionList[i].setRequestProperty("Content-Type", "application/json");
+                connectionList[i].setDoOutput(true);
 
             }
 
-
-            // CALL FUNCTION FOR THE CONNECTION HERE
-            //getRequest(connection);
-            //postRequest(connection);
-            //putRequest(connection);
-
-            // Get response code
-            /*
-            responseCode = connection.getResponseCode();
-            System.out.println("Response code: " + responseCode);
-
-            // Read response
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            response = new StringBuffer();
-            while ((inputLine = reader.readLine()) != null) {
-                response.append(inputLine);
-            }
-            reader.close();
-*/
-            //System.out.println("Response: " + response);
-
-
-
-            // Close connection
-            //connection.disconnect();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -102,12 +80,7 @@ public class HTTPHelper {
 
     public void postSensorRequest(HttpURLConnection connection, boolean state) {
         try {
-            connection.setRequestMethod("POST");
 
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            connection.setDoOutput(true);
-            //String requestBody = "{\"newState\": \"hej3\"}";
             // Create JSON request body based on the state boolean
             String requestBody = "{\"newState\": \"" + (state ? "true" : "false") + "\"}";
             try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
@@ -136,70 +109,69 @@ public class HTTPHelper {
         }
     }
 
-    public JSONObject convertArrayToJSON(int[] result) {
+    public JSONObject convertArrayToJSONandSend(int[] result) {
 
         JSONObject obj;
 
         for (int i = 0; i < result.length; i++) {
 
-            switch (i) {
-
-                case 0 : // gas
-                    if(result[i] == 0) {
-                        // add gasSensor false
-                        postSensorRequest(connectionList[i], false);
-                    }
-                    else {
-                        // gasSensor true
-                    }
-                    break;
-                case 1 : // light
-                    if(result[i] == 0) {
-                        // add gasSensor false
-                    }
-                    else {
-                        // gasSensor true
-                    }
-                    break;
-                case 2 : // steam
-                    if(result[i] == 0) {
-                        // add gasSensor false
-                    }
-                    else {
-                        // gasSensor true
-                    }
-                    break;
-                case 3 : // moisture
-                    if(result[i] == 0) {
-                        // add gasSensor false
-                    }
-                    else {
-                        // gasSensor true
-                    }
-                    break;
-                case 4 : // motion
-                    if(result[i] == 0) {
-                        // add gasSensor false
-                    }
-                    else {
-                        // gasSensor true
-                    }
-                    break;
-
-            }
-
+            if(result[7] == 1)    // gasSensor true
+                postSensorRequest(connectionList[0], true);
+            else
+                postSensorRequest(connectionList[0], false);
+            if(result[6] == 1)    // lightSensor true
+                postSensorRequest(connectionList[1], true);
+            else
+                postSensorRequest(connectionList[1], false);
+            if(result[5] == 1)    // steamSensor true
+                postSensorRequest(connectionList[2], true);
+            else
+                postSensorRequest(connectionList[2], false);
+            if(result[4] == 1)    // moistureSensor true
+                postSensorRequest(connectionList[3], true);
+            else
+                postSensorRequest(connectionList[3], false);
+            if(result[3] == 1)    // motionSensor true
+                postSensorRequest(connectionList[4], true);
+            else
+                postSensorRequest(connectionList[4], false);
 
         }
+
+        for (int i = 0; i < NUM_CONNECTIONS; i++) {
+            printResponse(connectionList[i]);
+        }
+
+        httpDisconnect();
+        HttpConnect();
 
         return null;
     }
 
-    public void sendSensorDataHTTP(JSONObject obj) {
+    public void printResponse(HttpURLConnection connection) {
 
-        for (int i = 0; i < NUM_CONNECTIONS; i++) {
+        try {
 
-            postRequest(connectionList[i]);
+            responseCode = connection.getResponseCode();
+            System.out.println("Response code: " + responseCode);
 
+            // Read response
+            BufferedReader reader = null;
+
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            String inputLine;
+            response = new StringBuffer();
+            while (true) {
+                if (!((inputLine = reader.readLine()) != null)) break;
+                response.append(inputLine);
+            }
+
+            reader.close();
+            System.out.println("Response: " + response);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }

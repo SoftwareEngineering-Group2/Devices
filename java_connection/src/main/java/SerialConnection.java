@@ -44,7 +44,7 @@ public class SerialConnection {
 
     public void serialReadData() throws IOException {
 
-        //httpHelper.HttpConnect();
+        httpHelper.HttpConnect();
 
         try {
             while (true) {
@@ -58,7 +58,7 @@ public class SerialConnection {
                     }
                     System.out.println("");
 
-                    //httpHelper.sendSensorDataHTTP(httpHelper.convertArrayToJSON(result));
+                    httpHelper.convertArrayToJSONandSend(result);
 
                 }
             }
