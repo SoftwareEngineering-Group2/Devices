@@ -92,6 +92,8 @@ void loop() {
 
   check_sensors();
 
+  delay(2000);
+
 }
 
 void ByteToArray( byte b, int arr[8] )

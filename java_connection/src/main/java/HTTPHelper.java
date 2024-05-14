@@ -14,6 +14,7 @@ public class HTTPHelper {
     public StringBuffer response;
     //HttpURLConnection connection;
     HttpURLConnection[] connectionList = new HttpURLConnection[7];
+    HttpURLConnection connection2;
     public void HttpConnect() {
         try {
 
@@ -25,7 +26,8 @@ public class HTTPHelper {
 
             for (int i = 0; i < NUM_CONNECTIONS; i++) {
 
-                String baseURL = "https://server-o8if.onrender.com/device/" + sensorList[i] + "/" + pwdkey;
+                String baseURL = "https://server-o8if.onrender.com/static/device/" + sensorList[i] + "/" + pwdkey;
+
                 URL url = new URL(baseURL);
 
                 // Open connection
@@ -35,7 +37,17 @@ public class HTTPHelper {
                 connectionList[i].setRequestProperty("Content-Type", "application/json");
                 connectionList[i].setDoOutput(true);
 
+
             }
+
+            String baseURL2 = "https://server-o8if.onrender.com/sensor/" + pwdkey;
+            URL url2 = new URL(baseURL2);
+
+            connection2 = (HttpURLConnection) url2.openConnection();
+
+            connection2.setRequestMethod("POST");
+            connection2.setRequestProperty("Content-Type", "application/json");
+            connection2.setDoOutput(true);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -92,6 +104,20 @@ public class HTTPHelper {
         }
     }
 
+    public void postSensorRequest2(HttpURLConnection connection, String name) {
+        try {
+
+            // Create JSON request body based on the state boolean
+            String requestBody = "{\"newInformation\": \"" + name + "\"}";
+            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+                byte[] data = requestBody.getBytes(StandardCharsets.UTF_8);
+                wr.write(data);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void putRequest(HttpURLConnection connection) {
         try {
             connection.setRequestMethod("POST");
@@ -112,34 +138,61 @@ public class HTTPHelper {
     public JSONObject convertArrayToJSONandSend(int[] result) {
 
         JSONObject obj;
+        int sensorNum = 667;
 
-        for (int i = 0; i < result.length; i++) {
+        //for (int i = 0; i < result.length; i++) {
 
-            if(result[7] == 1)    // gasSensor true
+            if(result[7] == 1) {    // gasSensor true
                 postSensorRequest(connectionList[0], true);
-            else
+                postSensorRequest2(connection2, "gasSensor");
+                sensorNum = 0;
+            }
+            else {
                 postSensorRequest(connectionList[0], false);
-            if(result[6] == 1)    // lightSensor true
+            }
+            if(result[6] == 1) {    // lightSensor true
                 postSensorRequest(connectionList[1], true);
-            else
+                postSensorRequest2(connection2, "lightSensor");
+                sensorNum = 1;
+            }
+            else {
                 postSensorRequest(connectionList[1], false);
-            if(result[5] == 1)    // steamSensor true
+            }
+            if(result[5] == 1) {    // steamSensor true
                 postSensorRequest(connectionList[2], true);
-            else
+                postSensorRequest2(connection2, "steamSensor");
+                System.out.println("STEAM SENSOR TRUE");
+                sensorNum = 2;
+            }
+            else {
                 postSensorRequest(connectionList[2], false);
-            if(result[4] == 1)    // moistureSensor true
+            }
+            if(result[4] == 1) {    // moistureSensor true
                 postSensorRequest(connectionList[3], true);
-            else
+                postSensorRequest2(connection2, "moistureSensor");
+                sensorNum = 3;
+            }
+            else {
                 postSensorRequest(connectionList[3], false);
-            if(result[3] == 1)    // motionSensor true
+            }
+            if(result[3] == 1) {   // motionSensor true
                 postSensorRequest(connectionList[4], true);
-            else
+                postSensorRequest2(connection2, "motionSensor");
+                sensorNum = 4;
+            }
+            else {
                 postSensorRequest(connectionList[4], false);
+            }
 
-        }
+        //}
 
-        for (int i = 0; i < NUM_CONNECTIONS; i++) {
-            printResponse(connectionList[i]);
+        //for (int i = 0; i < NUM_CONNECTIONS; i++) {
+          //  printResponse(connectionList[i]);
+        //}
+
+        if(sensorNum != 667) {
+            printResponse(connectionList[sensorNum]);
+            printResponse(connection2);
         }
 
         httpDisconnect();

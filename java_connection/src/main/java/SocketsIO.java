@@ -50,6 +50,8 @@ public class SocketsIO {
                 throw new RuntimeException(e);
             }
 
+            System.out.println("SOMEBODY IS SENDING ALL DEVICES MSG");
+
             updateHouse(args[0]);
 
         });
