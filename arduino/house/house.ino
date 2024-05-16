@@ -32,8 +32,12 @@ int light_sensor_val = 0;
 int steam_sensor_val = 0;
 int soil_sensor_val = 0;
 int motion_sensor_val = 0;
+int right_button_val = 0;
+int left_button_val = 0;
 
 int ultimate_flag = 0;
+
+int alarm = 0;
 
 byte sensor_byte = 0;
 
@@ -49,7 +53,7 @@ void setup() {
   }
 
   lcd.setCursor(0, 0); // set cursor to first row
-  lcd.print("Init done"); // print to lcd
+  lcd.print("Welcome!"); // print to lcd
  
   DOOR.attach(9);
   WINDOW.attach(10);
@@ -65,7 +69,8 @@ void setup() {
   pinMode(STEAM_SENSOR, INPUT);
   pinMode(SOIL_SENSOR, INPUT);
   pinMode(MOTION_SENSOR, INPUT);
-
+  pinMode(RIGHT_BUTTON, INPUT);
+  pinMode(LEFT_BUTTON, INPUT);
 
 
 }
@@ -77,22 +82,29 @@ void loop() {
     incomingByte = Serial.read(); // read the incoming byte:
     if (incomingByte != -1) { // -1 means no data is available
 
+      /*
       lcd.setCursor(0, 0); // set cursor to first row
       lcd.print("I received: "); // print out to LCD
       lcd.setCursor(0, 1); // set cursor to secon row
+      */
+      
       ByteToArray(incomingByte, input_array);
       
+      /*
       for (i=0; i < 8; ++i) {
         lcd.print(input_array[i]); // print out the retrieved value to the second row
         lcd.setCursor(i + 1, 1);
-      }
+      }*/
+      
       
     }
   }
 
   check_sensors();
 
-  delay(2000);
+  delay(1500);
+
+  sound_alarm();
 
 }
 
@@ -168,10 +180,12 @@ void check_sensors() {
   if(gas_sensor_val > 100 && output_array[0] == 0) {
     output_array[0] = 1;
     ultimate_flag = 1;
+    start_alarm();
   }
     if(gas_sensor_val < 100 && output_array[0] == 1) {
     output_array[0] = 0;
     ultimate_flag = 1;
+    stop_alarm();
   }
 
   light_sensor_val = analogRead(LIGHT_SENSOR);
@@ -179,10 +193,12 @@ void check_sensors() {
   if(light_sensor_val <= 100 && output_array[1] == 0) {
     output_array[1] = 1;
     ultimate_flag = 1;
+    digitalWrite(WHITE_LED, HIGH);
   }
     if(light_sensor_val > 100 && output_array[1] == 1) {
     output_array[1] = 0;
     ultimate_flag = 1;
+    digitalWrite(WHITE_LED, LOW);
   }
 
   steam_sensor_val = analogRead(STEAM_SENSOR);
@@ -219,6 +235,19 @@ void check_sensors() {
     ultimate_flag = 1;
   }
 
+  right_button_val = digitalRead(RIGHT_BUTTON);
+  if(right_button_val == 0) {
+    stop_alarm();
+  }
+
+  left_button_val = digitalRead(LEFT_BUTTON);
+  if(left_button_val == 0) {
+    lcd.clear();
+    lcd.setCursor(0, 0); // set cursor to first row
+    lcd.print("I'm"); // print to lcd
+    lcd.setCursor(0, 1);
+    lcd.print("Left Button!");
+  }
 
   if(ultimate_flag == 1) {
 
@@ -228,5 +257,47 @@ void check_sensors() {
 
   }
 
+
+}
+
+
+void sound_alarm() {
+
+  static int x = 0;
+
+  if(alarm == 1) {
+
+  if(x == 0)
+    tone(BUZZER, 1000);
+  if(x == 1)
+    tone(BUZZER, 700);
+      
+  x++;
+  if (x == 2) x = 0;
+
+  }
+
+}
+
+void start_alarm() {
+
+  lcd.clear();
+  lcd.setCursor(0, 0); // set cursor to first row
+  lcd.print("Warning!"); // print to lcd
+  lcd.setCursor(0, 1);
+  lcd.print("Gas Leak!");
+
+  alarm = 1;
+
+}
+
+
+void stop_alarm() {
+
+  lcd.clear();
+  lcd.setCursor(0, 0); // set cursor to first row
+  lcd.print("Welcome!"); // print to lcd
+  noTone(BUZZER);
+  alarm = 0;
 
 }

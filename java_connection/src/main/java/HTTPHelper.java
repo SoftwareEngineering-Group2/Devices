@@ -13,7 +13,8 @@ public class HTTPHelper {
     public int responseCode;
     public StringBuffer response;
     //HttpURLConnection connection;
-    HttpURLConnection[] connectionList = new HttpURLConnection[7];
+    //HttpURLConnection[] connectionList = new HttpURLConnection[7];
+    HttpURLConnection connectionLight;
     HttpURLConnection connection2;
     public void HttpConnect() {
         try {
@@ -24,7 +25,16 @@ public class HTTPHelper {
             String pwdkey = System.getenv("PWDKEY");
             System.out.println(pwdkey);
 
-            for (int i = 0; i < NUM_CONNECTIONS; i++) {
+            String baseURL = "https://server-o8if.onrender.com/static/device/whiteLed/" + pwdkey;
+            URL url = new URL(baseURL);
+            // Open connection
+            connectionLight = (HttpURLConnection) url.openConnection();
+
+            connectionLight.setRequestMethod("POST");
+            connectionLight.setRequestProperty("Content-Type", "application/json");
+            connectionLight.setDoOutput(true);
+
+            /*for (int i = 0; i < NUM_CONNECTIONS; i++) {
 
                 String baseURL = "https://server-o8if.onrender.com/static/device/" + sensorList[i] + "/" + pwdkey;
 
@@ -38,7 +48,7 @@ public class HTTPHelper {
                 connectionList[i].setDoOutput(true);
 
 
-            }
+            }*/
 
             String baseURL2 = "https://server-o8if.onrender.com/sensor/" + pwdkey;
             URL url2 = new URL(baseURL2);
@@ -56,38 +66,13 @@ public class HTTPHelper {
 
     public void httpDisconnect() {
 
-        for (int i = 0; i < NUM_CONNECTIONS; i++) {
+        /*for (int i = 0; i < NUM_CONNECTIONS; i++) {
 
             connectionList[i].disconnect();
 
-        }
+        }*/
+        //connectionLight.disconnect();
 
-    }
-
-    public void getRequest(HttpURLConnection connection) {
-        try {
-            // Request method
-            connection.setRequestMethod("GET");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void postRequest(HttpURLConnection connection) {
-        try {
-            connection.setRequestMethod("POST");
-
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            connection.setDoOutput(true);
-            String requestBody = "{\"hej2\": \"hej3\"}";
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                byte[] data = requestBody.getBytes(StandardCharsets.UTF_8);
-                wr.write(data);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public void postSensorRequest(HttpURLConnection connection, boolean state) {
@@ -118,23 +103,6 @@ public class HTTPHelper {
         }
     }
 
-    public void putRequest(HttpURLConnection connection) {
-        try {
-            connection.setRequestMethod("POST");
-
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            connection.setDoOutput(true);
-            String requestBody = "{\"tester\": \"testus\"}";
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                byte[] data = requestBody.getBytes(StandardCharsets.UTF_8);
-                wr.write(data);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public JSONObject convertArrayToJSONandSend(int[] result) {
 
         JSONObject obj;
@@ -143,45 +111,45 @@ public class HTTPHelper {
         //for (int i = 0; i < result.length; i++) {
 
             if(result[7] == 1) {    // gasSensor true
-                postSensorRequest(connectionList[0], true);
+                //postSensorRequest(connectionList[0], true);
                 postSensorRequest2(connection2, "gasSensor");
                 sensorNum = 0;
             }
             else {
-                postSensorRequest(connectionList[0], false);
+                //postSensorRequest(connectionList[0], false);
             }
             if(result[6] == 1) {    // lightSensor true
-                postSensorRequest(connectionList[1], true);
+                //postSensorRequest(connectionLight, true);
                 postSensorRequest2(connection2, "lightSensor");
                 sensorNum = 1;
             }
             else {
-                postSensorRequest(connectionList[1], false);
+                //postSensorRequest(connectionLight, false);
             }
             if(result[5] == 1) {    // steamSensor true
-                postSensorRequest(connectionList[2], true);
+                //postSensorRequest(connectionList[2], true);
                 postSensorRequest2(connection2, "steamSensor");
                 System.out.println("STEAM SENSOR TRUE");
                 sensorNum = 2;
             }
             else {
-                postSensorRequest(connectionList[2], false);
+                //postSensorRequest(connectionList[2], false);
             }
             if(result[4] == 1) {    // moistureSensor true
-                postSensorRequest(connectionList[3], true);
+                //postSensorRequest(connectionList[3], true);
                 postSensorRequest2(connection2, "moistureSensor");
                 sensorNum = 3;
             }
             else {
-                postSensorRequest(connectionList[3], false);
+                //postSensorRequest(connectionList[3], false);
             }
             if(result[3] == 1) {   // motionSensor true
-                postSensorRequest(connectionList[4], true);
+                //postSensorRequest(connectionList[4], true);
                 postSensorRequest2(connection2, "motionSensor");
                 sensorNum = 4;
             }
             else {
-                postSensorRequest(connectionList[4], false);
+                //postSensorRequest(connectionList[4], false);
             }
 
         //}
@@ -191,7 +159,8 @@ public class HTTPHelper {
         //}
 
         if(sensorNum != 667) {
-            printResponse(connectionList[sensorNum]);
+            //printResponse(connectionList[sensorNum]);
+            //printResponse(connectionLight);
             printResponse(connection2);
         }
 

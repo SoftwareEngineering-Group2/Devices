@@ -22,7 +22,7 @@ public class SerialConnection {
 			System.out.println("----------------------------------");
 		}*/
 
-        sp = SerialPort.getCommPort("COM3"); // device name TODO: must be changed
+        sp = SerialPort.getCommPort("COM5"); // device name TODO: must be changed
         sp.setComPortParameters(9600, 8, 1, 0); // default connection settings for Arduino
         sp.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING | SerialPort.TIMEOUT_WRITE_BLOCKING, 1000, 1000);
 
