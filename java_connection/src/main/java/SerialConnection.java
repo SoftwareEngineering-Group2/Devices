@@ -59,6 +59,7 @@ public class SerialConnection {
                     System.out.println("");
 
                     httpHelper.convertArrayToJSONandSend(result);
+                    //Thread.sleep(500);
 
                 }
             }

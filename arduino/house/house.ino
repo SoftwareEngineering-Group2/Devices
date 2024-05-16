@@ -35,6 +35,8 @@ int motion_sensor_val = 0;
 
 int ultimate_flag = 0;
 
+int alarm = 0;
+
 byte sensor_byte = 0;
 
 void setup() {
@@ -49,7 +51,7 @@ void setup() {
   }
 
   lcd.setCursor(0, 0); // set cursor to first row
-  lcd.print("Init done"); // print to lcd
+  lcd.print("Welcome!"); // print to lcd
  
   DOOR.attach(9);
   WINDOW.attach(10);
@@ -77,22 +79,29 @@ void loop() {
     incomingByte = Serial.read(); // read the incoming byte:
     if (incomingByte != -1) { // -1 means no data is available
 
+      /*
       lcd.setCursor(0, 0); // set cursor to first row
       lcd.print("I received: "); // print out to LCD
       lcd.setCursor(0, 1); // set cursor to secon row
+      */
+      
       ByteToArray(incomingByte, input_array);
       
+      /*
       for (i=0; i < 8; ++i) {
         lcd.print(input_array[i]); // print out the retrieved value to the second row
         lcd.setCursor(i + 1, 1);
-      }
+      }*/
+      
       
     }
   }
 
   check_sensors();
 
-  delay(2000);
+  delay(1500);
+
+  sound_alarm();
 
 }
 
@@ -168,10 +177,12 @@ void check_sensors() {
   if(gas_sensor_val > 100 && output_array[0] == 0) {
     output_array[0] = 1;
     ultimate_flag = 1;
+    start_alarm();
   }
     if(gas_sensor_val < 100 && output_array[0] == 1) {
     output_array[0] = 0;
     ultimate_flag = 1;
+    stop_alarm();
   }
 
   light_sensor_val = analogRead(LIGHT_SENSOR);
@@ -228,5 +239,38 @@ void check_sensors() {
 
   }
 
+
+}
+
+
+void sound_alarm() {
+
+  static int x = 0;
+
+  if(alarm == 1) {
+
+  if(x == 0)
+    tone(BUZZER, 1000);
+  if(x == 1)
+    tone(BUZZER, 700);
+      
+  x++;
+  if (x == 2) x = 0;
+
+  }
+
+}
+
+void start_alarm() {
+
+  alarm = 1;
+
+}
+
+
+void stop_alarm() {
+
+  noTone(BUZZER);
+  alarm = 0;
 
 }
